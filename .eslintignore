@@ -1,0 +1,4 @@
+# Ignorar código generado
+src/generated/
+node_modules/
+src/types/swagger-ui-dist.d.ts

@@ -10,6 +10,9 @@
 !.yarn/releases
 !.yarn/versions
 
+
+# Ignorar archivos generados
+src/generated/
 # testing
 /coverage
 

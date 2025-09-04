@@ -18,6 +18,8 @@ const eslintConfig = [
       "out/**",
       "build/**",
       "next-env.d.ts",
+      "src/generated/**", // 👈 ignora código generado de Prisma
+      "src/types/swagger-ui-dist.d.ts",
     ],
   },
 ];
