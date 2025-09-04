@@ -2,8 +2,8 @@
 
 // Importa la clase PrismaClient del paquete @prisma/client.
 // Esta clase es la que usaremos para interactuar con la base de datos.
-//import { PrismaClient } from "@prisma/client";
-import { PrismaClient } from "../generated/prisma";
+import { PrismaClient } from "@prisma/client";
+//import { PrismaClient } from "../generated/prisma";
 
 // Define una variable global para el cliente de Prisma.
 // Esto es crucial para evitar crear múltiples instancias en el entorno de desarrollo
