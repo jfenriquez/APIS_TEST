@@ -2,39 +2,32 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 
-// GET: /api/phrases?author=...&category=...&page=1&limit=20
+// GET: /api/commands?language=...&shortcut=...&page=1&limit=20
 export async function GET(req: Request) {
   const { searchParams, origin } = new URL(req.url);
-  const author = searchParams.get("author");
-  const category = searchParams.get("category");
+  const os = searchParams.get("os");
 
   const page = parseInt(searchParams.get("page") || "1", 10);
   const limit = parseInt(searchParams.get("limit") || "20", 10);
 
-  const total = await prisma.phrase.count({
+  const total = await prisma.command.count({
     where: {
-      ...(author ? { author: { name: { contains: author } } } : {}),
-      ...(category
-        ? { category: { name: { contains: category, mode: "insensitive" } } }
-        : {}),
+      os: os ? { name: { contains: os } } : {},
     },
   });
 
-  const phrases = await prisma.phrase.findMany({
+  const commands = await prisma.command.findMany({
     where: {
-      ...(author ? { author: { name: { contains: author } } } : {}),
-      ...(category
-        ? { category: { name: { contains: category, mode: "insensitive" } } }
-        : {}),
+      os: os ? { name: { contains: os, mode: "insensitive" } } : {},
     },
-    include: { author: true, category: true },
+    include: { os: true },
     skip: (page - 1) * limit,
     take: limit,
   });
 
   const totalPages = Math.ceil(total / limit);
 
-  // reconstruimos la URL base sin page/limit
+  // reconstruir URL base sin page/limit
   const baseUrl = new URL(req.url);
   baseUrl.searchParams.delete("page");
   baseUrl.searchParams.delete("limit");
@@ -60,6 +53,6 @@ export async function GET(req: Request) {
     totalPages,
     prevPage,
     nextPage,
-    data: phrases,
+    data: commands,
   });
 }

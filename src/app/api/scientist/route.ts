@@ -2,34 +2,43 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 
-// GET: /api/phrases?author=...&category=...&page=1&limit=20
+// GET: /api/scientists?name=Einstein&field=Physics&page=1&limit=20
 export async function GET(req: Request) {
   const { searchParams, origin } = new URL(req.url);
-  const author = searchParams.get("author");
-  const category = searchParams.get("category");
+
+  const name = searchParams.get("name");
+  const field = searchParams.get("field");
 
   const page = parseInt(searchParams.get("page") || "1", 10);
   const limit = parseInt(searchParams.get("limit") || "20", 10);
 
-  const total = await prisma.phrase.count({
+  const total = await prisma.scientist.count({
     where: {
-      ...(author ? { author: { name: { contains: author } } } : {}),
-      ...(category
-        ? { category: { name: { contains: category, mode: "insensitive" } } }
-        : {}),
+      ...(name && { name: { contains: name, mode: "insensitive" } }),
+      ...(field && {
+        field: {
+          name: { contains: field, mode: "insensitive" },
+        },
+      }),
     },
   });
 
-  const phrases = await prisma.phrase.findMany({
+  const scientists = await prisma.scientist.findMany({
     where: {
-      ...(author ? { author: { name: { contains: author } } } : {}),
-      ...(category
-        ? { category: { name: { contains: category, mode: "insensitive" } } }
-        : {}),
+      ...(name && { name: { contains: name, mode: "insensitive" } }),
+      ...(field && {
+        field: {
+          name: { contains: field, mode: "insensitive" },
+        },
+      }),
     },
-    include: { author: true, category: true },
+    include: {
+      field: true,
+      discoveries: true,
+    },
     skip: (page - 1) * limit,
     take: limit,
+    orderBy: { name: "asc" },
   });
 
   const totalPages = Math.ceil(total / limit);
@@ -60,6 +69,6 @@ export async function GET(req: Request) {
     totalPages,
     prevPage,
     nextPage,
-    data: phrases,
+    data: scientists,
   });
 }

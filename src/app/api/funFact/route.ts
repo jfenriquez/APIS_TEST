@@ -2,34 +2,36 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 
-// GET: /api/phrases?author=...&category=...&page=1&limit=20
+// GET: /api/funFact?text=space&category=Science&page=1&limit=20
 export async function GET(req: Request) {
   const { searchParams, origin } = new URL(req.url);
-  const author = searchParams.get("author");
+
+  const text = searchParams.get("text");
   const category = searchParams.get("category");
 
   const page = parseInt(searchParams.get("page") || "1", 10);
   const limit = parseInt(searchParams.get("limit") || "20", 10);
 
-  const total = await prisma.phrase.count({
+  const total = await prisma.funFact.count({
     where: {
-      ...(author ? { author: { name: { contains: author } } } : {}),
+      ...(text ? { text: { contains: text, mode: "insensitive" } } : {}),
       ...(category
         ? { category: { name: { contains: category, mode: "insensitive" } } }
         : {}),
     },
   });
 
-  const phrases = await prisma.phrase.findMany({
+  const funFacts = await prisma.funFact.findMany({
     where: {
-      ...(author ? { author: { name: { contains: author } } } : {}),
+      ...(text ? { text: { contains: text, mode: "insensitive" } } : {}),
       ...(category
         ? { category: { name: { contains: category, mode: "insensitive" } } }
         : {}),
     },
-    include: { author: true, category: true },
+    include: { category: true },
     skip: (page - 1) * limit,
     take: limit,
+    orderBy: { createdAt: "desc" },
   });
 
   const totalPages = Math.ceil(total / limit);
@@ -60,6 +62,6 @@ export async function GET(req: Request) {
     totalPages,
     prevPage,
     nextPage,
-    data: phrases,
+    data: funFacts,
   });
 }

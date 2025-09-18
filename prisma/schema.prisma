@@ -7,10 +7,11 @@ generator client {
 }
 
 datasource db {
-  provider = "sqlite"
+  provider = "postgresql"
   url      = env("DATABASE_URL")
 }
 
+/////PRHASES///
 model Author {
   id      Int      @id @default(autoincrement())
   name    String
@@ -32,4 +33,82 @@ model Phrase {
 
   author   Author   @relation(fields: [authorId], references: [id])
   category Category @relation(fields: [categoryId], references: [id])
+}
+
+/////////////////////Biografías de científicos famosos
+model Scientist {
+  id          Int       @id @default(autoincrement())
+  name        String
+  birthDate   DateTime?
+  deathDate   DateTime?
+  nationality String?
+  biography   String
+  fieldId     Int
+  createdAt   DateTime  @default(now())
+
+  field       ScienceField @relation(fields: [fieldId], references: [id])
+  discoveries Discovery[]
+}
+
+model ScienceField {
+  id         Int         @id @default(autoincrement())
+  name       String
+  scientists Scientist[]
+}
+
+model Discovery {
+  id          Int      @id @default(autoincrement())
+  title       String
+  description String
+  year        Int?
+  scientistId Int
+  createdAt   DateTime @default(now())
+
+  scientist Scientist @relation(fields: [scientistId], references: [id])
+}
+
+////////////////API-Datos curiosos
+model FunFact {
+  id         Int      @id @default(autoincrement())
+  text       String
+  source     String? // opcional: URL o referencia
+  categoryId Int
+  createdAt  DateTime @default(now())
+
+  category FunFactCategory @relation(fields: [categoryId], references: [id])
+}
+
+model FunFactCategory {
+  id       Int       @id @default(autoincrement())
+  name     String
+  funFacts FunFact[]
+}
+
+///////API-Comandos de consola
+model Command {
+  id          Int      @id @default(autoincrement())
+  command     String
+  description String
+  example     String?
+  osId        Int
+  createdAt   DateTime @default(now())
+
+  os OperatingSystem @relation(fields: [osId], references: [id])
+}
+
+model OperatingSystem {
+  id        Int        @id @default(autoincrement())
+  name      String // Windows, Linux, MacOS, etc.
+  commands  Command[]
+  shortcuts Shortcut[]
+}
+
+///////API- Atajos Windows
+model Shortcut {
+  id          Int             @id @default(autoincrement())
+  keys        String // Ej: "Ctrl+C"
+  description String
+  osId        Int
+  createdAt   DateTime        @default(now())
+  os          OperatingSystem @relation(fields: [osId], references: [id])
 }
