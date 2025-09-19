@@ -54,10 +54,12 @@ const endpoints: Record<
   },
 };
 
+type ApiResponse = { url: string; data: unknown } | { error: string } | null;
+
 export default function Playground() {
   const [selected, setSelected] = useState<Endpoint>("phrases");
   const [filters, setFilters] = useState<Record<string, string>>({});
-  const [response, setResponse] = useState<any>(null);
+  const [response, setResponse] = useState<ApiResponse>(null);
 
   const buttonsRef = useRef<HTMLDivElement>(null);
 
