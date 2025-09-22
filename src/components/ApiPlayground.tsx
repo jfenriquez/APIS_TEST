@@ -12,7 +12,17 @@ const endpoints: Record<
   phrases: {
     label: "Phrases",
     filters: [
-      { name: "category", options: ["ciencia", "literatura", "filosofía"] },
+      {
+        name: "category",
+        options: [
+          "Ciencia",
+          "Filosofía",
+          "Literatura",
+          "Historia",
+          "Arte",
+          "Tecnología",
+        ],
+      },
       { name: "author" },
       { name: "page", options: ["1", "2", "3"] },
       { name: "limit", options: ["5", "10", "20"] },
@@ -21,7 +31,10 @@ const endpoints: Record<
   funFact: {
     label: "Fun Facts",
     filters: [
-      { name: "category", options: ["Cultura", "Historia", "Ciencia"] },
+      {
+        name: "category",
+        options: ["Cultura", "Historia", "Ciencia", "Informatica"],
+      },
       { name: "text" },
       { name: "page", options: ["1", "2", "3"] },
       { name: "limit", options: ["2", "5", "10"] },
